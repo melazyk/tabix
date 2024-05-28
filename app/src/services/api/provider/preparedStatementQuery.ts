@@ -164,14 +164,14 @@ export default class preparedStatementQuery extends TemplateQuery {
               FROM (SELECT name FROM system.dictionaries) as namez
                      LEFT JOIN ( select name, \`key.names\` as key_name, \`key.types\` as key_type
                                  FROM system.dictionaries
-                                        array join key ) as keyz ON (keyz.name = namez.name)
+                                        array join \`key.names\`, \`key.types\` ) as keyz ON (keyz.name = namez.name)
                      LEFT JOIN ( select name, \`attribute.names\` as attr_name, \`attribute.types\` as attr_type
                                  FROM system.dictionaries
                                         array join attribute ) as attrs ON (attrs.name = namez.name)
               ORDER BY namez.name, \`attribute.names\`
               LIMIT ${limitDics}
     `;
-    if (this.versionCompare(this.version, '21.4.1') < 0) {
+    if ((this.versionCompare(this.version, '21.4.1') < 0) || (this.versionCompare(this.version, '24.4.1.2088') >= 0)) {
       // version < 21.4.1
       s1 = `SELECT name, key, attribute.names, attribute.types
             FROM system.dictionaries
